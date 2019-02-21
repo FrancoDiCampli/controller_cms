@@ -1,15 +1,6 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
+use App\Pagina;
 
 Route::get('/', function () {
     return view('welcome');
@@ -20,3 +11,12 @@ Route::resource('paginas', 'PaginasController');
 Route::resource('parrafos', 'ParrafosController');
 
 Route::get('crear/{pagina}','ParrafosController@crear')->name('parrafos.crear');
+
+Route::resource('sitio','WebController');
+
+Route::get('home',function(){
+    $tratamientos = Pagina::where('categoria_id',1)->get();
+    $productos = Pagina::where('categoria_id',2)->get();
+    $servicios = Pagina::where('categoria_id',3)->get();
+    return view('layouts.web', compact('tratamientos','productos','servicios'));
+});
