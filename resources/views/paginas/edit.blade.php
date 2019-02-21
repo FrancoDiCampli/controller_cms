@@ -10,15 +10,13 @@
     			@csrf
                 @method('PUT')
     			<input type="text" name="titulo" value="{{$pagina->titulo}}" placeholder="titulo">
-    			<textarea name="descripcion" value="{{$pagina->descripcion}}" placeholder="descripción"></textarea> 
+				<textarea name="descripcion" placeholder="descripción">
+					{{$pagina->descripcion}}
+				</textarea> 
     			<input type="file" name="portada" >
-                <img src="{{$pagina->portada}}" alt="">
-    			<select name="categoria_id" id="" >
-                    <option value="{{$pagina->categoria_id}}" disable>{{$pagina->categoria_id}}</option>
-					@foreach($categorias as $categoria)
-					    <option value="{{$categoria->id}}">{{$categoria->categoria}}</option>
-					@endforeach    				 
-    			</select>
+				<img src="{{$pagina->portada}}" alt="" >
+				
+				<input type="text" name="categoria_id" value="{{$categoria}}" hidden>
 				
 				<input type="submit" value="Actualizar">
 

@@ -7,7 +7,8 @@ use App\Pagina;
 use App\Categoria;
 
 use Illuminate\Http\Request;
-
+use App\Parrafo;
+use Image;
 class PaginasController extends Controller
 {
     /**
@@ -17,9 +18,11 @@ class PaginasController extends Controller
      */
     public function index()
     {
-        $paginas = Pagina::get();
+        $id = 1;
+        $categoria = Categoria::find($id);
+        $paginas = Pagina::where('categoria_id',$id)->paginate(10);
 
-        return $paginas;
+        return view('paginas.index',compact('paginas','categoria'));
     }
 
     /**
@@ -29,8 +32,8 @@ class PaginasController extends Controller
      */
     public function create()
     {
-        $categorias = Categoria::get();
-        return view('paginas.create',compact('categorias'));
+        $categoria = 1;
+        return view('paginas.create',compact('categoria'));
     }
 
     /**
@@ -39,17 +42,23 @@ class PaginasController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    
+    public function store(Request $request){
+
+        
         $ruta = public_path().'/img/galeria/';
         $temp_name = 'noimage.png';
           
-            if($request->get('portada'))
-            {
-                $image = $request->get('portada');
-                $name = time().'.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
-                \Image::make($request->get('portada'))->save(public_path('img/galeria/').$name);
-                $foto = '/img/galeria/'.$name;
+            if($request->hasFile('portada'))
+            {   
+                
+                $imagenOriginal = request()->file('portada');
+                          
+                $imagen = Image::make($imagenOriginal);         
+                $temp_name = $this->random_string() . '.' . $imagenOriginal->getClientOriginalExtension();
+                 
+                $imagen->save($ruta . $temp_name, 70);
+                $foto = '/img/galeria/'.$temp_name;
             } else {
                 $foto = '/img/galeria/default.png';
             }
@@ -78,7 +87,10 @@ class PaginasController extends Controller
      */
     public function show($id)
     {
-        //
+        $pagina = Pagina::find($id);
+        $secciones = Parrafo::orderBy('orden')->where('pagina_id',$id)->get();
+        return view('paginas.show',compact('pagina','secciones'));
+
     }
 
     /**
@@ -89,9 +101,10 @@ class PaginasController extends Controller
      */
     public function edit($id)
     {
-        $categorias = Categoria::get();
+        
         $pagina = Pagina::findOrFail($id);
-        return view('paginas.edit',compact('pagina','categorias'));
+        $categoria = $pagina->categoria->id;
+        return view('paginas.edit',compact('pagina','categoria'));
     }
 
     /**
@@ -105,11 +118,25 @@ class PaginasController extends Controller
     {
         $pagina = Pagina::findOrFail($id);
 
-        $foto = '/img/galeria/default.jpg';
+      
+        $ruta = public_path().'/img/galeria/';
+
+        $foto = $pagina->portada;
+
+           if (request()->hasFile('portada')){
+            $imagenOriginal = request()->file('portada');
+                          
+            $imagen = Image::make($imagenOriginal);         
+            $temp_name = $this->random_string() . '.' . $imagenOriginal->getClientOriginalExtension();
+             
+            $imagen->save($ruta . $temp_name, 70);
+            $foto = '/img/galeria/'.$temp_name;
+            }
+        
         
         $atributos = request()->validate([
             'titulo' => 'required|min:1|max:90',
-            'descripcion' => 'required|min:6|max:190',
+            'descripcion' => 'required|min:6',
             'categoria_id' => 'required',
         ]);
 
@@ -133,5 +160,19 @@ class PaginasController extends Controller
     {
         $pagina = Pagina::findOrFail($id);
         $pagina->delete();
+        return redirect('paginas');
+    }
+
+    protected function random_string()
+    {
+        $key = '';
+        $keys = array_merge( range('a','z'), range(0,9) );
+     
+        for($i=0; $i<10; $i++)
+        {
+            $key .= $keys[array_rand($keys)];
+        }
+     
+        return $key;
     }
 }

@@ -18,3 +18,5 @@ Route::get('/', function () {
 Route::resource('categorias', 'CategoriasController');
 Route::resource('paginas', 'PaginasController');
 Route::resource('parrafos', 'ParrafosController');
+
+Route::get('crear/{pagina}','ParrafosController@crear')->name('parrafos.crear');

@@ -5,28 +5,35 @@
 <br><br>
 <div class="container">
     <div class="row">
-    	<div class="col s12">
-    		<form action="{{route('parrafos.store')}}" method="POST" enctype="multipart/form-data">
+    	<div class="col">
+			<form 
+				action="{{route('parrafos.store')}}" 
+				method="POST" 
+				enctype="multipart/form-data"
+				class="form-group">
     			@csrf
-    			<input type="text" name="titulo" value="{{old('titulo')}}" placeholder="titulo">
-    			<textarea name="cuerpo" value="{{old('cuerpo')}}" placeholder="cuerpo"></textarea> 
-    			<input type="file" name="imagen" >
-                <select name="orden" id="">
-                    <option value="">Orden</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-    			<select name="pagina_id" id="" >
-                    <option value="" disable>Pagina</option>
-					@foreach($paginas as $pagina)
-					    <option value="{{$pagina->id}}">{{$pagina->id}}</option>
-					@endforeach    				 
-    			</select>
+				<input 
+				class="form-control"
+					type="text" name="titulo" 
+					value="{{old('titulo')}}" 
+					placeholder="titulo">
 				
-				<input type="submit" value="Enviar">
+				<textarea class="form-control" name="cuerpo" 
+					value="{{old('cuerpo')}}" 
+					placeholder="cuerpo"></textarea> 
+
+				<input type="file" name="imagen" >
+				<label for="">Orden</label>
+                <select name="orden" id="" class="form-control">
+
+                   @foreach ($resultado as $item)
+				<option value="{{$item}}">{{$item}}</option>
+
+				   @endforeach
+                  
+                </select>
+			<input type="text" value="{{$pagina->id}}" hidden name="pagina_id">
+				<input type="submit" value="Guardar" class="btn btn-primary">
 
     		</form>
     	</div>

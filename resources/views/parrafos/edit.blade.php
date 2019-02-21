@@ -10,24 +10,24 @@
     			@csrf
                 @method('PUT')
     			<input type="text" name="titulo" value="{{$parrafo->titulo}}" placeholder="titulo">
-    			<textarea name="cuerpo" value="{{$parrafo->cuerpo}}" placeholder="cuerpo"></textarea> 
+    			<textarea name="cuerpo"placeholder="cuerpo"> {{$parrafo->cuerpo}} </textarea> 
     			<img src="{{$parrafo->imagen}}" alt="">
                 <input type="file" name="imagen" >
-                <select name="orden" id="">
-                    <option value="{{$parrafo->orden}}">Orden {{$parrafo->orden}}</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-    			<select name="pagina_id" id="" >
-                    <option value="{{$parrafo->pagina_id}}" disable>Pagina {{$parrafo->pagina_id}}</option>
-					@foreach($paginas as $pagina)
-					    <option value="{{$pagina->id}}">{{$pagina->id}}</option>
-					@endforeach    				 
-    			</select>
+                <select name="orden" id="" class="form-control">
+
+					@foreach ($resultado as $item)
+					 @if($item == $parrafo->orden){
+						<option value="{{$item}}" selected>{{$item}}</option>
+					 }
+					 @endif
+					<option value="{{$item}}">{{$item}}</option>
+ 
+					@endforeach
+				   
+				 </select>
+				<input type="text" name="pagina_id" value="{{$parrafo->pagina_id}}" hidden>
 				
+    		
 				<input type="submit" value="Enviar">
 
     		</form>

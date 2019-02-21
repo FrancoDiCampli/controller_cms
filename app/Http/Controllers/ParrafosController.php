@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use App\Pagina;
 
 use App\Parrafo;
-use Illuminate\Http\Request;
 
+use Illuminate\Http\Request;
+use Image;
 class ParrafosController extends Controller
 {
     /**
@@ -32,6 +33,25 @@ class ParrafosController extends Controller
         return view('parrafos.create',compact('paginas'));
     }
 
+    public function crear($id){
+
+        $orden = [];
+        $sel = [];
+        $pagina = Pagina::find($id);
+        foreach ($pagina->parrafos as $value) {
+            array_push($sel , $value->orden);
+        }
+        
+        for ($i=1; $i <= 10; $i++) { 
+            array_push($orden,$i);
+        }
+
+       $resultado = array_diff($orden, $sel);
+
+        
+        return view('parrafos.create',compact('pagina','resultado'));
+        }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -43,19 +63,23 @@ class ParrafosController extends Controller
         $ruta = public_path().'/img/galeria/';
         $temp_name = 'noimage.png';
           
-            if($request->get('imagen'))
-            {
-                $image = $request->get('imagen');
-                $name = time().'.' . explode('/', explode(':', substr($image, 0, strpos($image, ';')))[1])[1];
-                \Image::make($request->get('imagen'))->save(public_path('img/galeria/').$name);
-                $foto = '/img/galeria/'.$name;
+            if($request->hasFile('imagen'))
+            {   
+                
+                $imagenOriginal = request()->file('imagen');
+                          
+                $imagen = Image::make($imagenOriginal);         
+                $temp_name = $this->random_string() . '.' . $imagenOriginal->getClientOriginalExtension();
+                 
+                $imagen->save($ruta . $temp_name, 70);
+                $foto = '/img/galeria/'.$temp_name;
             } else {
                 $foto = '/img/galeria/default.png';
             }
         
         $atributos = request()->validate([
             'titulo' => 'required|min:1|max:90',
-            'cuerpo' => 'required|min:6|max:190',
+            'cuerpo' => 'required|min:6',
             'orden' => 'required',
             'pagina_id' => 'required'
         ]);
@@ -67,7 +91,7 @@ class ParrafosController extends Controller
 
         Parrafo::create($atributos);
 
-        return redirect('parrafos');
+        return redirect()->route('paginas.show',['id'=>$request->pagina_id]);
     }
 
     /**
@@ -89,9 +113,29 @@ class ParrafosController extends Controller
      */
     public function edit($id)
     {
-        $paginas = Pagina::get();
-        $parrafo = Parrafo::findOrFail($id);
-        return view('parrafos.edit',compact('paginas','parrafo'));
+        $parrafo = Parrafo::find($id);
+
+        $orden = [];
+        $sel = [];
+        $num = $parrafo->pagina->id;
+
+     
+       
+        $pagina = Pagina::find($num);
+
+        foreach ($pagina->parrafos as $value) {
+            array_push($sel , $value->orden);
+        }
+        
+        for ($i=1; $i <= 10; $i++) { 
+            array_push($orden,$i);
+        }
+
+        $resultado = array_diff($orden, $sel);
+        
+        array_push($resultado,$parrafo->orden);
+       
+        return view('parrafos.edit',compact('parrafo','resultado'));
     }
 
     /**
@@ -105,11 +149,24 @@ class ParrafosController extends Controller
     {
         $parrafo = Parrafo::findOrFail($id);
         
-        $foto = '/img/galeria/default.jpg';
+        $ruta = public_path().'/img/galeria/';
+
+        $foto = $parrafo->imagen;
+
+           if (request()->hasFile('imagen')){
+            $imagenOriginal = request()->file('imagen');
+                          
+            $imagen = Image::make($imagenOriginal);         
+            $temp_name = $this->random_string() . '.' . $imagenOriginal->getClientOriginalExtension();
+             
+            $imagen->save($ruta . $temp_name, 70);
+            $foto = '/img/galeria/'.$temp_name;
+            }
+        
         
         $atributos = request()->validate([
             'titulo' => 'required|min:1|max:90',
-            'cuerpo' => 'required|min:6|max:190',
+            'cuerpo' => 'required|min:6',
             'orden' => 'required',
             'pagina_id' => 'required'
         ]);
@@ -121,7 +178,7 @@ class ParrafosController extends Controller
 
         $parrafo->update($atributos);
 
-        return redirect('parrafos');
+        return redirect()->route('paginas.show',$atributos['pagina_id']);
     }
 
     /**
@@ -134,5 +191,19 @@ class ParrafosController extends Controller
     {
         $parrafo = Parrafo::findOrFail($id);
         $parrafo->delete();
+        return redirect()->back();
+    }
+
+    protected function random_string()
+    {
+        $key = '';
+        $keys = array_merge( range('a','z'), range(0,9) );
+     
+        for($i=0; $i<10; $i++)
+        {
+            $key .= $keys[array_rand($keys)];
+        }
+     
+        return $key;
     }
 }
