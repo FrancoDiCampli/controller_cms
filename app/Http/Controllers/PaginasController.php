@@ -25,6 +25,13 @@ class PaginasController extends Controller
         return view('paginas.index',compact('paginas','categoria'));
     }
 
+    public function indice($id){
+       
+        $categoria = Categoria::find($id);
+        $paginas = Pagina::where('categoria_id',$id)->paginate(10);
+        return view('paginas.index',compact('paginas','categoria'));
+    }
+
     /**
      * Show the form for creating a new resource.
      *

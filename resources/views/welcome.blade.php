@@ -13,9 +13,9 @@
     </head>
     <body>
             <nav class="nav">
-                    <a class="nav-link active" href="#">Categorias</a>
-                    <a class="nav-link"href="{{route('paginas.index')}}">Paginas</a>
-                    <a class="nav-link" href="{{route('parrafos.index')}}">Secciones</a>
+                    <a class="nav-link active" href="{{route('categorias.index')}}">Categorias</a>
+                    {{-- <a class="nav-link"href="{{route('paginas.index')}}">Paginas</a>
+                    <a class="nav-link" href="{{route('parrafos.index')}}">Secciones</a> --}}
                     <a class="nav-link disabled" href="{{route('parrafos.create')}}" tabindex="-1" aria-disabled="true">Disabled</a>
                   </nav>
 

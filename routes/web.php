@@ -20,3 +20,5 @@ Route::get('home',function(){
     $servicios = Pagina::where('categoria_id',3)->get();
     return view('layouts.web', compact('tratamientos','productos','servicios'));
 });
+
+Route::get('pagina/{categoria}','PaginasController@indice')->name('pagina');
