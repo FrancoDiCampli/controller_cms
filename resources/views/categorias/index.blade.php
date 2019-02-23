@@ -3,11 +3,14 @@
 @section('contenido')
 
 <div class="form-group">
-    <ul>
-        @foreach ($categorias as $item)
-            <li><a href="{{route('pagina',$item->id)}}" class="btn btn-success">{{$item->categoria}}</a></li>
-        @endforeach
-    </ul>
+    
+
+    @foreach($categorias as $item)
+        <a type="button" class="btn btn-primary" href="{{route('pagina',$item->id)}}">
+        {{$item->categoria}} <span class="badge badge-light">{{count($item->paginas)}}</span>
+            <span class="sr-only">sitios</span>
+          </a>
+    @endforeach
         
    
 </div>
